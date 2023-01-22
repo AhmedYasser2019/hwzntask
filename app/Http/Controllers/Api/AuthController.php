@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Repositories\Contracts\IUser;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -14,7 +13,7 @@ class AuthController extends Controller
 {
     use ApiResponse;
 
-    public function login(Request $request, IUser $user)
+    public function login(Request $request, IUser $userRepository)
     {
 
         $validation = Validator::make($request->all(), [
@@ -33,7 +32,7 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $request['email'], 'password' => $request['password']])) {
 
             // store device
-            $user->storeDevice($request, auth()->id());
+            $userRepository->storeDevice($request, auth()->id());
             //
 
             if (auth()->user()->devices()->count() < 3) {

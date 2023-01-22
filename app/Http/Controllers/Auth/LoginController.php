@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
 use App\Providers\RouteServiceProvider;
 use App\Repositories\Contracts\IUser;
 use Illuminate\Http\Request;
@@ -23,16 +24,16 @@ class LoginController extends Controller
     */
 
 
-    private IUser $user;
+    private IUser $userRepository;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(IUser $user)
+    public function __construct(IUser $userRepository)
     {
-        $this->user = $user;
+        $this->userRepository = $userRepository;
         $this->middleware('guest')->except('logout');
     }
 
@@ -47,44 +48,36 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $this->validate($request, [
-            'email' => 'required|email|min:4|max:30|exists:users',
-            'password' => 'required|min:4|max:30'
-        ]);
-        $user = $this->user->findBy('email', $request->email);
+        $user = $this->userRepository->findBy('email', $request->email);
+
         if ($user->blocked) {
-            RateLimiter::cleanRateLimiterKey($request->email);
+
             return redirect()->back()->withInput()->with('error', 'your email is blocked !');
         }
+
         RateLimiter::hit($request->email, 30);
 
         if (RateLimiter::attempts($request->email) == 4) {
+
             $user->update([
                 'blocked' => true,
-                'login_tries_number' => 0
-
             ]);
 
             return redirect()->back()->withInput()->with('error', 'your email is blocked !');
 
         }
+        if (RateLimiter::attempts($request->email) == 3) {
+
+            return redirect()->back()->withInput()->with('error', 'try again after 30 second');
+
+        }
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password,])) {
-            $user->update([
-                'login_tries_number' => 0
-            ]);
+
             return redirect()->route('home');
         } else {
 
-
-            $user->update([
-                'login_tries_number' => (integer)$user->login_tries_number + 1
-            ]);
-            if ($user->login_tries_number == 3) {
-                return redirect()->back()->withInput()->with('error', 'try again after 30 second');
-
-            }
             return redirect()->back()->withInput()->with('error', 'wrong credential');
         }
 
