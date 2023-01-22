@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
-use App\Providers\RouteServiceProvider;
 use App\Repositories\Contracts\IUser;
-use App\Services\UserService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -26,17 +23,15 @@ class LoginController extends Controller
 
 
     private IUser $userRepository;
-    private UserService $userService;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(IUser $userRepository, UserService $userService)
+    public function __construct(IUser $userRepository)
     {
         $this->userRepository = $userRepository;
-        $this->userService = $userService;
         $this->middleware('guest')->except('logout');
     }
 
@@ -55,11 +50,27 @@ class LoginController extends Controller
     {
         $user = $this->userRepository->findBy('email', $request->email);
 
+        if ($user->blocked) {
 
-        $this->userService->checkIfUserBlocked($user);
-        $this->userService->allowedTimeForEmail($request->email);
-        $this->userService->alertUserAfterExceededMaximumTries($request->email);
-        $this->userService->blockUserAfterExceededMaximumTries($user);
+            return redirect()->back()->withInput()->with('error', 'your email is blocked !');
+        }
+
+        RateLimiter::hit($request->email, 30);
+
+        if (RateLimiter::attempts($request->email) == 4) {
+
+            $user->update([
+                'blocked' => true,
+            ]);
+
+            return redirect()->back()->withInput()->with('error', 'your email is blocked !');
+
+        }
+        if (RateLimiter::attempts($request->email) == 3) {
+
+            return redirect()->back()->withInput()->with('error', 'try again after 30 second');
+
+        }
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password,])) {
 
@@ -77,6 +88,5 @@ class LoginController extends Controller
         Auth::guard()->logout();
         return redirect()->route('login');
     }
-
 
 }
