@@ -21,7 +21,7 @@ class AuthController extends Controller
             'password' => 'required',
             'device' => 'required', // device name
             'device_id' => 'required', // device Id
-            'type' => 'required',
+            'type' => 'required', // device type
         ]);
         if ($validation->fails()) {
             $data = $validation->errors()->first();
