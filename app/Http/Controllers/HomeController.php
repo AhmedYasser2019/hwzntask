@@ -22,9 +22,9 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(IUser $user)
+    public function index(IUser $userRepository)
     {
-        $users = $user->findAll(['*'], true, 'name', 'DESC');
+        $users = $userRepository->findAll(['name', 'last_name', 'email'], true, ['name', 'last_name'], 'ASC');
         return view('home', compact('users'));
     }
 }

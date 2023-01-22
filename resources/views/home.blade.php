@@ -19,6 +19,7 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">name</th>
+                                <th scope="col">last name</th>
                                 <th scope="col">email</th>
                             </tr>
                             </thead>
@@ -28,6 +29,7 @@
                             <tr>
                                 <th scope="row">{{$loop->iteration}}</th>
                                 <td>{{$user->name}}</td>
+                                <td>{{$user->last_name}}</td>
                                 <td>{{$user->email}}</td>
 
                             </tr>

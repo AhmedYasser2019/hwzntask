@@ -53,11 +53,13 @@ abstract class AbstractModelRepository implements IModelRepository
         return $this->model->where($key, $value)->first();
     }
 
-    public function findAll($fields = ['*'], $applyOrder = true, $orderBy = self::ORDER_BY, $orderDir = self::ORDER_DIR)
+    public function findAll($fields = ['*'], $applyOrder = true, $orderBy = [self::ORDER_BY], $orderDir = self::ORDER_DIR)
     {
         $query = $this->model;
         if ($applyOrder) {
-            $query = $query->orderBy($orderBy, $orderDir);
+            foreach ($orderBy as $field) {
+                $query = $query->orderBy($field, $orderDir);
+            }
         }
         return $query->get($fields);
     }

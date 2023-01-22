@@ -22,7 +22,7 @@ interface IModelRepository
 
     public function findBy($key, $value);
 
-    public function findAll($fields = [], $applyOrder = true, $orderBy = self::ORDER_BY, $orderDir = self::ORDER_DIR);
+    public function findAll($fields = [], $applyOrder = true, $orderBy = [self::ORDER_BY], $orderDir = self::ORDER_DIR);
 
 
 }

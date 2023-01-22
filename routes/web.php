@@ -20,9 +20,13 @@ Route::get('/', function () {
 //Auth::routes();
 
 Route::get('login', [\App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+
 //Route::group(['middleware' => 'throttle:3,.5'], function () {
     Route::post('login', [\App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');
 //});
 Route::post('logout', [\App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::group(['middleware' => 'auth'], function (){
+
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+});
