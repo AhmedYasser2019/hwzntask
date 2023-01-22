@@ -17,11 +17,9 @@ class UserService
 
     }
 
-    public function blockUserAfterExceededMaximumTries($user)
+    public function blockUserAfterExceededMaximumTries($email) :bool
     {
-        if (RateLimiter::attempts($user->email) == self::NUMBER_OF_BLOCK_TRIES) {
-            $this->blockUser($user);
-        }
+        return RateLimiter::attempts($email) == self::NUMBER_OF_BLOCK_TRIES;
     }
 
     public function blockUser($user)
