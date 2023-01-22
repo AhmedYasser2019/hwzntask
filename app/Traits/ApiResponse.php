@@ -8,7 +8,7 @@ trait ApiResponse
     public function apiResponse(string $message = '', int $code = 200, $data = [])
     {
         $array = [
-            'status'  => $code,
+            'status' => $code,
             'message' => $message,
         ];
         if (in_array($code, $this->success())) {
@@ -22,7 +22,7 @@ trait ApiResponse
         return response($array, $code);
     }
 
-    public function success()
+    public function success(): array
     {
         return [
             200, 201, 202
@@ -33,17 +33,19 @@ trait ApiResponse
     {
         return $this->apiResponse(__('invalid data'), 0, $validator->errors());
     }
+
     public function validation_exception($validator)
     {
         return $this->apiResponse(__('invalid data'), 0, $validator);
     }
-    function api_response($data = null, $message = "", $status = "success", $status_code = 200)
+
+    function apiResponseWithPaginate($data = null, $message = "", $status = "success", $status_code = 200)
     {
 
         $response = [
-            'status'  => $status ? 1 : 0,
+            'status' => $status ? 1 : 0,
             'message' => $message,
-            'data'    => $data,
+            'data' => $data,
         ];
         try {
             if ($data) {
