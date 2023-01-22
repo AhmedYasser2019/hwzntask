@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ApiLoginRequest;
 use App\Repositories\Contracts\IUser;
+use App\Services\UserService;
 use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +22,7 @@ class AuthController extends Controller
             $userRepository->storeDevice($request, auth()->id());
             //
 
-            if (auth()->user()->devices()->count() < 3) {
+            if (auth()->user()->devices()->count() <= UserService::ALLOWED_DEVICES_NUMBER) {
                 return $this->apiResponse(
                     'success login',
                     200,

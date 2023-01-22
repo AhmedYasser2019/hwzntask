@@ -10,6 +10,7 @@ class UserService
     const MAX_TIME_EXCEEDED = 30;
     const NUMBER_OF_ALERT_TRIES = 3;
     const NUMBER_OF_BLOCK_TRIES = 4;
+    const ALLOWED_DEVICES_NUMBER = 2;
 
     public function allowedTimeForEmail($email)
     {
