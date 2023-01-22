@@ -19,11 +19,8 @@ class UserService
 
     public function blockUserAfterExceededMaximumTries($user)
     {
-
         if (RateLimiter::attempts($user->email) == self::NUMBER_OF_BLOCK_TRIES) {
             $this->blockUser($user);
-            return redirect()->back()->withInput()->with('error', 'your email is blocked !');
-
         }
     }
 
@@ -37,18 +34,12 @@ class UserService
     public function alertUserAfterExceededMaximumTries($email)
     {
 
-        if (RateLimiter::attempts($email) == self::NUMBER_OF_ALERT_TRIES) {
-            return redirect()->back()->withInput()->with('error', 'your email is blocked !');
-
-        }
+       return RateLimiter::attempts($email) == self::NUMBER_OF_ALERT_TRIES;
     }
 
     public function checkIfUserBlocked($user)
     {
-        if ($user->blocked) {
-
-            return redirect()->back()->withInput()->with('error', 'your email is blocked !');
-        }
+        return $user->blocked;
     }
 
 
