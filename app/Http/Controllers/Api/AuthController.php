@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\ApiLoginRequest;
 use App\Repositories\Contracts\IUser;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -13,21 +14,8 @@ class AuthController extends Controller
 {
     use ApiResponse;
 
-    public function login(Request $request, IUser $userRepository)
+    public function login(ApiLoginRequest $request, IUser $userRepository)
     {
-
-        $validation = Validator::make($request->all(), [
-            'email' => 'required|email|exists:users',
-            'password' => 'required',
-            'device' => 'required', // device name
-            'device_id' => 'required', // device Id
-            'type' => 'required', // device type
-        ]);
-        if ($validation->fails()) {
-            $data = $validation->errors()->first();
-            return $this->apiResponse($data, 422, null);
-        }
-
 
         if (Auth::attempt(['email' => $request['email'], 'password' => $request['password']])) {
 
