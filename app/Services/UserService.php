@@ -31,7 +31,7 @@ class UserService
         ]);
     }
 
-    public function alertUserAfterExceededMaximumTries($email)
+    public function alertUserAfterExceededMaximumTries($email) :bool
     {
 
        return RateLimiter::attempts($email) == self::NUMBER_OF_ALERT_TRIES;
